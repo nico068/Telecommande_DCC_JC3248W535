@@ -1,5 +1,4 @@
-# esp32_JC3248W535EN_work_exampl_lvgl_axs15231b
-Минимальный рабочий код для JC3248W535EN ESP32S3 с дисплеем axs15231b и portLVGL. ESP-IDF v5.5.0.
-В примере экран заполняется цветом, выводится надпись "Hello world" и кнопка со счетчиком.
-В примере работает програмный поворот экрана, аппаратный повород не поддерживает этот драйвер устройства.
-Код будет полезен начинающим, таким как я.
+# Conception et Test d'une télécommande DCC avec esp32_JC3248W535EN_work_exampl_lvgl_axs15231b
+Conception d'une télécommande avec écran JC3248W535EN ESP32S3 
+le drivers de cette écran est le axs15231b et fonctionne avec LVGL 9.3.
+Ceci est conçu sur VSCode avec ESP-IDF v5.5.1.
