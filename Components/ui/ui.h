@@ -36,6 +36,12 @@ extern lv_obj_t *ui_icnbattP1;
 extern lv_obj_t *ui_icnbattP2;
 extern lv_obj_t *ui_icnbattP3;
 extern lv_obj_t *ui_icnbattP4;
+// BATTERY PERCENT LABELS (one per screen)
+extern lv_obj_t *ui_LabelBattPctP0;
+extern lv_obj_t *ui_LabelBattPctP1;
+extern lv_obj_t *ui_LabelBattPctP2;
+extern lv_obj_t *ui_LabelBattPctP3;
+extern lv_obj_t *ui_LabelBattPctP4;
 
 // WIFI ICONS (one per screen)
 extern lv_obj_t *ui_icnwifiP0;
@@ -49,7 +55,6 @@ extern lv_obj_t *ui_Gaugevitesse;
 extern lv_obj_t *ui_imgDirectionP1;
 extern lv_obj_t *ui_LabelVitesse;
 
-// IMAGES AND IMAGE SETS
 LV_IMAGE_DECLARE(arrow_left_15597);       // assets/arrow_left_15597.png
 LV_IMAGE_DECLARE(arrow_right_15604);      // assets/arrow_right_15604.png
 LV_IMAGE_DECLARE(bat_3_4);                // assets/bat_3_4.png
@@ -70,6 +75,9 @@ LV_IMAGE_DECLARE(Elok_Ge44_II);           // assets/Elok_Ge44_II.png
 LV_IMAGE_DECLARE(Elok_GE44_III);          // assets/ELok_GE44_III.png
 LV_IMAGE_DECLARE(ELok_Ge44_III_RhB);      // assets/ELok_Ge44_III_RhB.png
 LV_IMAGE_DECLARE(ELok_RE44_II_R4);        // assets/ELok_RE44_II_R4.png
+
+// Image générique pour loco inconnue
+extern const lv_image_dsc_t img_loco_unknown;
 
 // FONTS
 

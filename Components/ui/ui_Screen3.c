@@ -8,6 +8,7 @@ lv_obj_t * ui_headerP3 = NULL;
 lv_obj_t * ui_LabelPageP3 = NULL;
 lv_obj_t * ui_icnwifiP3 = NULL;
 lv_obj_t * ui_icnbattP3 = NULL;
+lv_obj_t * ui_LabelBattPctP3 = NULL;
 lv_obj_t * ui_PanelBtnP3 = NULL;
 lv_obj_t * ui_BtnCabineP3 = NULL;
 lv_obj_t * ui_LabelBtnCabineP3 = NULL;
@@ -283,7 +284,7 @@ void ui_Screen3_screen_init(void)
     lv_obj_set_width(ui_LabelPageP3, LV_SIZE_CONTENT);
     lv_obj_set_height(ui_LabelPageP3, LV_SIZE_CONTENT);
     lv_obj_set_align(ui_LabelPageP3, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_LabelPageP3, "Loco");
+    lv_label_set_text(ui_LabelPageP3, "Fonction");
     lv_obj_set_style_text_color(ui_LabelPageP3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_LabelPageP3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_LabelPageP3, &lv_font_montserrat_28, LV_PART_MAIN | LV_STATE_DEFAULT); 
@@ -298,6 +299,17 @@ void ui_Screen3_screen_init(void)
     lv_obj_set_align(ui_icnbattP3, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_icnbattP3, LV_OBJ_FLAG_CLICKABLE);     /// Flags
     lv_obj_remove_flag(ui_icnbattP3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    // Label pourcentage batterie
+    ui_LabelBattPctP3 = lv_label_create(ui_headerP3);
+    lv_obj_set_width(ui_LabelBattPctP3, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_LabelBattPctP3, LV_SIZE_CONTENT);
+    lv_obj_set_align(ui_LabelBattPctP3, LV_ALIGN_CENTER);
+    lv_obj_set_x(ui_LabelBattPctP3, -90); // à droite de l’icône
+    lv_obj_set_y(ui_LabelBattPctP3, 0);
+    lv_label_set_text(ui_LabelBattPctP3, "100%"); // Valeur par défaut, à mettre à jour dynamiquement
+    lv_obj_set_style_text_color(ui_LabelBattPctP3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_LabelBattPctP3, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     
     // Icône WiFi
     ui_icnwifiP3 = lv_image_create(ui_headerP3);

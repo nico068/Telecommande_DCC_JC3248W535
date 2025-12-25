@@ -45,21 +45,18 @@ esp_err_t battery_ui_update_all_icons(void)
     // Verrouiller LVGL avant de toucher l'interface
     lvgl_port_lock(0);
 
-    // Mettre à jour l'icône sur Screen0
-    if (ui_icnbattP0 != NULL) {
-        lv_image_set_src(ui_icnbattP0, bat_img);
-    }
-    if (ui_icnbattP1 != NULL) {
-        lv_image_set_src(ui_icnbattP1, bat_img);
-    }
-    if (ui_icnbattP2 != NULL) {
-        lv_image_set_src(ui_icnbattP2, bat_img);
-    }
-    if (ui_icnbattP3 != NULL) {
-        lv_image_set_src(ui_icnbattP3, bat_img);
-    }
-    if (ui_icnbattP4 != NULL) {
-        lv_image_set_src(ui_icnbattP4, bat_img);
+    // Optimisation : tableau de pointeurs et boucle pour icônes et labels
+    lv_obj_t* icons[] = {ui_icnbattP0, ui_icnbattP1, ui_icnbattP2, ui_icnbattP3, ui_icnbattP4};
+    lv_obj_t* labels[] = {ui_LabelBattPctP0, ui_LabelBattPctP1, ui_LabelBattPctP2, ui_LabelBattPctP3, ui_LabelBattPctP4};
+    char pct_str[8];
+    snprintf(pct_str, sizeof(pct_str), "%d%%", percentage);
+    for (size_t i = 0; i < sizeof(icons)/sizeof(icons[0]); ++i) {
+        if (icons[i] != NULL) {
+            lv_image_set_src(icons[i], bat_img);
+        }
+        if (labels[i] != NULL) {
+            lv_label_set_text(labels[i], pct_str);
+        }
     }
 
     lvgl_port_unlock();

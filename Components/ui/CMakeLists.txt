@@ -1,4 +1,4 @@
-idf_component_register(SRCS "ui_Screen0.c"
+idf_component_register(SRCS "img_loco_unknown.c" "ui_Screen0.c"
                             "ui_Screen1.c"
                             "ui_Screen2.c"
                             "ui_Screen3.c"

@@ -6,4 +6,4 @@ cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_VER 1)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(esp32_JC3248W535EN_work_lcd)
+project(Telecommande_DCC_esp32_JC3248W535EN)

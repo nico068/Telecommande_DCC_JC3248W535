@@ -8,6 +8,7 @@ lv_obj_t * ui_headerP0 = NULL;
 lv_obj_t * ui_LabelPageP0 = NULL;
 lv_obj_t * ui_icnwifiP0 = NULL;
 lv_obj_t * ui_icnbattP0 = NULL;
+lv_obj_t * ui_LabelBattPctP0 = NULL;
 
 // Menu principal
 lv_obj_t * ui_PanelMenuP0 = NULL;
@@ -92,6 +93,17 @@ void ui_Screen0_screen_init(void)
     lv_obj_set_align(ui_icnbattP0, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_icnbattP0, LV_OBJ_FLAG_CLICKABLE);     /// Flags
     lv_obj_remove_flag(ui_icnbattP0, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    // Label pourcentage batterie
+    ui_LabelBattPctP0 = lv_label_create(ui_headerP0);
+    lv_obj_set_width(ui_LabelBattPctP0, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_LabelBattPctP0, LV_SIZE_CONTENT);
+    lv_obj_set_align(ui_LabelBattPctP0, LV_ALIGN_CENTER);
+    lv_obj_set_x(ui_LabelBattPctP0, -90); // à droite de l’icône
+    lv_obj_set_y(ui_LabelBattPctP0, 0);
+    lv_label_set_text(ui_LabelBattPctP0, "100%"); // Valeur par défaut, à mettre à jour dynamiquement
+    lv_obj_set_style_text_color(ui_LabelBattPctP0, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_LabelBattPctP0, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // Icône WiFi
     ui_icnwifiP0 = lv_image_create(ui_headerP0);

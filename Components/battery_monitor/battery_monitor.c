@@ -360,10 +360,7 @@ esp_err_t battery_monitor_force_update(void)
     battery_level_t new_level = calculate_level(new_voltage);
     uint8_t new_percentage = calculate_percentage(new_voltage);
 
-    // Vérifier si le niveau a changé
-    bool level_changed = (new_level != current_level);
-
-    // Mettre à jour les valeurs
+    // Toujours appeler le callback si défini (garantit la synchro UI)
     current_voltage_mv = new_voltage;
     current_level = new_level;
     current_percentage = new_percentage;
@@ -371,8 +368,7 @@ esp_err_t battery_monitor_force_update(void)
     ESP_LOGD(TAG, "Battery: %d mV (%d%%) - Level: %d", 
              current_voltage_mv, current_percentage, current_level);
 
-    // Appeler le callback si le niveau a changé
-    if (level_changed && user_callback != NULL) {
+    if (user_callback != NULL) {
         user_callback(current_level, current_voltage_mv, current_percentage);
     }
 

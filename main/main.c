@@ -253,9 +253,11 @@ static void battery_update_callback(battery_level_t level, uint16_t voltage_mv, 
     (void)level;        // Paramètres non utilisés mais requis par la signature
     (void)voltage_mv;
     (void)percentage;
-    
-    // Appeler la fonction de mise à jour des icônes
+
+    // Verrouiller LVGL avant de modifier l'UI
+    lvgl_port_lock(0);
     battery_ui_update_all_icons();
+    lvgl_port_unlock();
 }
 
 void app_main(void)
@@ -381,7 +383,7 @@ void app_main(void)
     lvgl_port_unlock();
 
     /* Rafraîchir les icônes batterie maintenant que l'UI est créée */
-    //battery_ui_update_all_icons();
+    battery_ui_update_all_icons();
 
     /* Initialiser l'encodeur avec intégration UI (doit être après ui_init) */
     ESP_LOGI(TAG, "Initializing encoder with UI integration");

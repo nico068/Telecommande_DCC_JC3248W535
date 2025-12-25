@@ -1,4 +1,38 @@
+
 // LVGL version: 9.4
+
+#include "ui.h"
+#include <string.h>
+#include <stdlib.h>
+
+
+// Pointeur global pour la msgbox d'info
+#include "../../managed_components/lvgl__lvgl/src/widgets/msgbox/lv_msgbox.h"
+static lv_obj_t * msgbox_info = NULL;
+
+// Supprime la msgbox et son backdrop si besoin
+static void delete_msgbox_and_backdrop(void) {
+    if(msgbox_info) {
+        lv_obj_t * parent = lv_obj_get_parent(msgbox_info);
+        if(lv_obj_get_class(parent) == &lv_msgbox_backdrop_class) {
+            lv_obj_del(parent); // supprime le backdrop ET la msgbox
+        } else {
+            lv_obj_del(msgbox_info);
+        }
+        msgbox_info = NULL;
+    }
+}
+
+// Callback pour le bouton OK de la msgbox d'adresse inconnue
+static void msgbox_ok_event_cb(lv_event_t * e)
+{
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
+        // Fermer la msgbox et son overlay si besoin
+        delete_msgbox_and_backdrop();
+        // Valider la loco (comme bouton principal Ok)
+        ui_screen2_validate_loco();
+    }
+}
 
 #include "ui.h"
 #include <string.h>
@@ -11,6 +45,7 @@ lv_obj_t * ui_LabelPageP2 = NULL;
 lv_obj_t * ui_icnbleP2 = NULL;
 lv_obj_t * ui_icnwifiP2 = NULL;
 lv_obj_t * ui_icnbattP2 = NULL;
+lv_obj_t * ui_LabelBattPctP2 = NULL;
 lv_obj_t * ui_infolocoP2 = NULL;
 lv_obj_t * ui_LabelAdrLocoP2 = NULL;
 lv_obj_t * ui_imglocoP2 = NULL;
@@ -32,10 +67,10 @@ static const lv_image_dsc_t * selected_loco_image = NULL;
 static const lv_image_dsc_t * select_loco_image(const char * adr)
 {
     if(!adr || strlen(adr) == 0) return NULL;
-    
+
     int addr_num = atoi(adr);
     const lv_image_dsc_t * img = NULL;
-    
+
     // Mapper les adresses DCC aux images de locos disponibles
     switch(addr_num) {
         case 650:
@@ -54,16 +89,17 @@ static const lv_image_dsc_t * select_loco_image(const char * adr)
             img = &ELok_RE44_II_R4;
             break;
         default:
-            // Adresse non reconnue - pas d'image
-            return NULL;
+            // Adresse non reconnue - icône générique
+            img = &img_loco_unknown;
+            break;
     }
-    
+
     // Afficher l'image sur Screen2
     if(img) {
         lv_image_set_src(ui_imglocoP2, img);
         lv_obj_clear_flag(ui_imglocoP2, LV_OBJ_FLAG_HIDDEN);
     }
-    
+
     return img;
 }
 
@@ -79,9 +115,13 @@ static void keypad_event_handler(lv_event_t * e)
         if(txt == NULL) return;
         
         if(strcmp(txt, "Retour") == 0) {
-            // Supprimer le dernier caractère
+            // Si aucun caractère n'est saisi, revenir à l'écran précédent (Screen1)
             int len = strlen(current_address);
-            if(len > 0) {
+            if(len == 0) {
+                // Changer d'écran : retour à la cabine
+                _ui_screen_change(&ui_Screen1, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_Screen1_screen_init);
+            } else {
+                // Supprimer le dernier caractère
                 current_address[len - 1] = '\0';
                 lv_label_set_text(ui_LabelAdrLocoP2, current_address[0] == '\0' ? "Adr Loco" : current_address);
             }
@@ -90,13 +130,23 @@ static void keypad_event_handler(lv_event_t * e)
             // Valider l'adresse saisie
             if(strlen(current_address) > 0) {
                 selected_loco_image = select_loco_image(current_address);  // Sélectionner l'image appropriée et la stocker
-                
+
                 // Stocker l'adresse validée pour le label et Screen1
                 strcpy(validated_address, current_address);
                 lv_label_set_text(ui_LabelAdrLocoP2, validated_address);
-                
-                if(selected_loco_image == NULL) {
-                    lv_obj_add_flag(ui_imglocoP2, LV_OBJ_FLAG_HIDDEN);
+
+                // Si l'adresse n'est pas reconnue, afficher un message d'information
+                int addr_num = atoi(current_address);
+                if(addr_num != 650 && addr_num != 620 && addr_num != 644 && addr_num != 812 && addr_num != 228) {
+                    // Afficher un message temporaire sur l'écran (LVGL 9.4)
+                    delete_msgbox_and_backdrop();
+                    msgbox_info = lv_msgbox_create(NULL);
+                    lv_msgbox_add_title(msgbox_info, "Info");
+                    lv_msgbox_add_text(msgbox_info, "Adresse inconnue, mais utilisable");
+                    lv_obj_t * ok_btn = lv_msgbox_add_footer_button(msgbox_info, "OK");
+                    lv_obj_center(msgbox_info);
+                    // Attacher le callback sur le bouton OK (footer), sur LV_EVENT_CLICKED
+                    lv_obj_add_event_cb(ok_btn, msgbox_ok_event_cb, LV_EVENT_CLICKED, NULL);
                 }
                 // Réinitialiser le buffer pour pouvoir entrer une nouvelle adresse
                 current_address[0] = '\0';
@@ -124,12 +174,12 @@ void ui_screen2_validate_loco(void)
     
     // Vérifier que ce n'est pas le texte par défaut et qu'une loco est sélectionnée
     if(strcmp(adr, "Adresse Loco") != 0 && selected_loco_image != NULL) {
+        // Fermer la msgbox d'info et son overlay si elle existe
+        delete_msgbox_and_backdrop();
         // Mettre à jour les infos de la loco sur Screen1
         ui_update_loco_info(adr, selected_loco_image);
-        
         // Réinitialiser le buffer d'adresse
         current_address[0] = '\0';
-        
         // Retourner à la cabine
         _ui_screen_change(&ui_Screen1, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_Screen1_screen_init);
     }
@@ -196,6 +246,17 @@ void ui_Screen2_screen_init(void)
     lv_obj_set_align(ui_icnbattP2, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_icnbattP2, LV_OBJ_FLAG_CLICKABLE);     /// Flags
     lv_obj_remove_flag(ui_icnbattP2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    // Label pourcentage batterie
+    ui_LabelBattPctP2 = lv_label_create(ui_headerP2);
+    lv_obj_set_width(ui_LabelBattPctP2, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_LabelBattPctP2, LV_SIZE_CONTENT);
+    lv_obj_set_align(ui_LabelBattPctP2, LV_ALIGN_CENTER);
+    lv_obj_set_x(ui_LabelBattPctP2, -90); // à droite de l’icône
+    lv_obj_set_y(ui_LabelBattPctP2, 0);
+    lv_label_set_text(ui_LabelBattPctP2, "100%"); // Valeur par défaut, à mettre à jour dynamiquement
+    lv_obj_set_style_text_color(ui_LabelBattPctP2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_LabelBattPctP2, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     
     // Icône WiFi
     ui_icnwifiP2 = lv_image_create(ui_headerP2);
